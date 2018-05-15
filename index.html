@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="./css/leaflet.groupedlayercontrol.css">
   <link rel="stylesheet" href="./css/leaflet-search.css">
   <link rel="stylesheet" href="./css/map.css">
+  <link rel="stylesheet" href="./css/leaflet-sidebar.css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
   <!-- JavaScript library -->
   <script src="./javascript/leaflet-src.js"></script>
@@ -16,6 +18,7 @@
   <!-- Plugins -->
   <script src="./javascript/leaflet.groupedlayercontrol.js"></script>
   <script src="./javascript/leaflet-search.js"></script>
+  <script src="./javascript/leaflet-sidebar.js"></script>
 
   <!-- geoJson overlays -->
   <script src="./javascript/aoss_installations.js"></script>
@@ -29,9 +32,118 @@
   <script src="./javascript/nc_soils.js"></script>
   <script src="./javascript/nc_capa.js"></script>
   <script src="./javascript/nc_populated_places.js"></script>
+
+  <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100%;
+            font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+        }
+        .lorem {
+            font-style: italic;
+            color: #AAA;
+        }
+    </style>
 </head>
 
 <body>
+  <!-- Sidebar content -->
+  <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+                <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+                <li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+            </ul>
+
+            <ul role="tablist">
+                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    ESHD Web Map
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <p>Use this area to submit collected GPS coordinates.</p>
+
+                <form name="submit-to-google-sheet">
+                  <table>
+                    <tr><td>EHS:  </td>
+                      <td><select name="ehs">
+                            <option value="GWB">GWB</option>
+                            <option value="MLG">MLG</option>
+                            <option value="CLP">CLP</option>
+                            <option value="ALT">ALT</option>
+                          </select></td></tr>
+                    <tr><td>Coordinate type:  </td>
+                      <td><select name="type">
+                            <option value="private well">Private Well</option>
+                            <option value="septic tank">Septic tank</option>
+                            <option value="distribution box">Distribution box</option>
+                            <option value="drainfield">Drainfield</option>
+                            <option value="aoss">AOSS</option>
+                          </select></td></tr>
+                    <tr><td>Latitude:  </td>
+                      <td><input name="lat" type="text" pattern="^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$" placeholder="Latitude" required></td></tr>
+                    <tr><td>Longitude:  </td>
+                      <td><input name="long" type="text" pattern="^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$" placeholder="Longitude" required></td></tr>
+                    <tr><td>Click only once:  </td>
+                      <td><button type="submit">Submit</button></td></tr></table>
+                      <p>Future features/functions:</p>
+                        <ul>
+                        <li>Parcels always on top as selectable layer so other, visual layers can be toggled on, yet the popup window for parcels will always display when a parcel is clicked,</li>
+                        <li>Labels for addresses, watersheds, populated places, and soils at certain zoom levels,</li>
+                        <li>Subtle markers for addresses, populated places, aoss installations,</li>
+                        <li>Fix Northampton County Addresses overlay - will toggle but no functionality,</li>
+                        <li>Improve on popup window formatting,</li>
+                        <li>Highlight selected parcels and any other selectable features,</li>
+                        <li>Measure tool,</li>
+                        <li>Coordinates on mouseover,</li>
+                        <li>GPS coordinates entered into sidebar form automatically display as markers in the corresponding overlay depending on coordinate type using Google Sheets,</li>
+                        <li>Fix sidebar icons and overall format and update with more resources like Sewage and Handling regulations and Private Well regulations pdf files and anything else EHS would find helpful.</li>
+                        <li>Fix conflict with sidebar and search function (both work separately, but there wasn't enough time to configure them to coexist)</li>
+                        <li>Create bounds for the viewable area of the map so users don't pan to another state, country, etc. Will remain over ESVA.</li>
+                        </ul>
+                </form>
+
+                        <script>
+                          const scriptURL = 'https://script.google.com/macros/s/AKfycbyRilVXJwioWToMIf4WB6qKifgITb9G-NGzSMeMgd9CykMqI6k/exec'
+                          const form = document.forms['submit-to-google-sheet']
+
+                          form.addEventListener('submit', e => {
+                            e.preventDefault()
+                            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+                              .then(response => console.log('Success!', response))
+                              .catch(error => console.error('Error!', error.message))
+                          })
+                        </script>
+                    </div>
+
+            <div class="sidebar-pane" id="profile">
+                <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="messages">
+                <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="settings">
+                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+        </div>
+    </div>
+
+
   <!-- Web map and content -->
   <div id="map" style="width: 100%; height: 100%"></div>
   <script>
@@ -43,7 +155,6 @@
       zoom: 10
     });
 
-
     // Variables for basemap layers
     var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
@@ -53,7 +164,7 @@
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Add popup window for features
+    // Popup window functions
     function ac_parcels_popup (feature, layer) {
       layer.bindPopup("<h2>Accomack County</h2>" + 
                               "<table><tr><td><b>Tax Map Number:  " + "</b></td><td>" + feature.properties.ac_tax_map + "</td></tr>" +
@@ -82,7 +193,7 @@
       layer.bindPopup("<h1>AOSS Installation</h1><p>" + " Tax Map Number:  " + feature.properties.Tax_Map_Nu + "</p>");
     };
 
-    // Create variables for geoJson overlays
+    // Variables for geoJson overlays
     var aoss_installations = L.geoJson(aoss_installations, {
           onEachFeature: aoss_installations_popup
         }),
@@ -129,7 +240,7 @@
           style:  nc_soils_style
         });
 
-    // Add search functionality
+    // Search functionality
     var searchControl = new L.Control.Search({
     layer: ac_parcels,
     propertyName: 'ac_tax_map',
@@ -199,6 +310,9 @@
 
     var layerControl = L.control.groupedLayers(baseLayers, groupedOverlays, options);
     map.addControl(layerControl);
+
+    // Variable for Sidebar
+    var sidebar = L.control.sidebar('sidebar').addTo(map);
 	
   </script>
 </body>
